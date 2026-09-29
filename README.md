@@ -1,18 +1,40 @@
 # UmgHealthcare
 
-To start your Phoenix server:
+Medication tracking system for Hospital La Paz. Built for the Web Development
+course at Universidad Mariano Gálvez, written in Elixir with Phoenix LiveView
+and Postgres.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Requirements
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+- Elixir 1.17 or newer (tested with 1.20) and Erlang/OTP 27 or newer
+- Docker with `docker compose`
 
-Ready to run in production? Please [check our deployment guides](https://phoenix.hexdocs.pm/deployment.html).
+## Running in development
 
-## Learn more
+1. Start the database:
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://phoenix.hexdocs.pm/overview.html
-* Docs: https://phoenix.hexdocs.pm
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+       docker compose up -d db
+
+2. Install dependencies, create the database and build the assets:
+
+       mix setup
+
+3. Start the server:
+
+       mix phx.server
+
+Open [http://localhost:4000](http://localhost:4000).
+
+## Tests
+
+    mix test
+
+Before considering a change done:
+
+    mix precommit
+
+## Stopping the database
+
+    docker compose stop db
+
+To also delete the data: `docker compose down -v`.
