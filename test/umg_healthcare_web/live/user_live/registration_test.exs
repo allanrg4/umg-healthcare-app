@@ -66,6 +66,25 @@ defmodule UmgHealthcareWeb.UserLive.RegistrationTest do
       assert Accounts.get_user_by_email_and_password(email, valid_user_password())
     end
 
+    test "creates a patient profile when the role is patient", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, ~p"/users/register")
+      email = unique_user_email()
+
+      lv
+      |> form("#registration_form",
+        user: %{
+          full_name: "Ana López",
+          email: email,
+          password: valid_user_password(),
+          role: "patient"
+        }
+      )
+      |> render_submit()
+
+      user = Accounts.get_user_by_email(email)
+      assert UmgHealthcare.Patients.get_patient_for_user!(user)
+    end
+
     test "renders errors for duplicated email", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/users/register")
       user = user_fixture(%{email: "test@email.com"})

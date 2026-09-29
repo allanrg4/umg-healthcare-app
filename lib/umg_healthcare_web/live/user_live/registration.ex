@@ -3,6 +3,7 @@ defmodule UmgHealthcareWeb.UserLive.Registration do
 
   alias UmgHealthcare.Accounts
   alias UmgHealthcare.Accounts.User
+  alias UmgHealthcare.Patients
 
   @impl true
   def render(assigns) do
@@ -73,7 +74,9 @@ defmodule UmgHealthcareWeb.UserLive.Registration do
   @impl true
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.register_user(user_params) do
-      {:ok, _user} ->
+      {:ok, user} ->
+        create_profile(user)
+
         {:noreply,
          socket
          |> put_flash(:info, "Cuenta creada. Ahora puedes iniciar sesión.")
@@ -88,6 +91,13 @@ defmodule UmgHealthcareWeb.UserLive.Registration do
     changeset = Accounts.change_user_registration(%User{}, user_params)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
+
+  # Patients need a profile from the start; doctors do not.
+  defp create_profile(%User{role: :patient} = user) do
+    {:ok, _patient} = Patients.create_patient(user)
+  end
+
+  defp create_profile(_user), do: :ok
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, form: to_form(changeset, as: "user"))
