@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(UmgHealthcareApp.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(UmgHealthcare.Repo, :manual)

@@ -2,12 +2,12 @@
    https://tailwindcss.com/docs/configuration */
 
 @import "tailwindcss" source(none);
-@import "phoenix-colocated/umg_healthcare_app/colocated.css";
+@import "phoenix-colocated/umg_healthcare/colocated.css";
 @source "../css";
 @source "../js";
-@source "../../lib/umg_healthcare_app_web";
+@source "../../lib/umg_healthcare_web";
 /* Required for Tailwind to automatically pick up changes in colocated CSS files in dev */
-@source "../../_build/dev/phoenix-colocated/umg_healthcare_app/*/";
+@source "../../_build/dev/phoenix-colocated/umg_healthcare/*/";
 
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */

@@ -1,6 +1,6 @@
-defmodule UmgHealthcareApp do
+defmodule UmgHealthcare do
   @moduledoc """
-  UmgHealthcareApp keeps the contexts that define your domain
+  UmgHealthcare keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

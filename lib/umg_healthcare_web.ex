@@ -1,12 +1,12 @@
-defmodule UmgHealthcareAppWeb do
+defmodule UmgHealthcareWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use UmgHealthcareAppWeb, :controller
-      use UmgHealthcareAppWeb, :html
+      use UmgHealthcareWeb, :controller
+      use UmgHealthcareWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -40,7 +40,7 @@ defmodule UmgHealthcareAppWeb do
     quote do
       use Phoenix.Controller, formats: [:html, :json]
 
-      use Gettext, backend: UmgHealthcareAppWeb.Gettext
+      use Gettext, backend: UmgHealthcareWeb.Gettext
 
       import Plug.Conn
 
@@ -80,16 +80,16 @@ defmodule UmgHealthcareAppWeb do
   defp html_helpers do
     quote do
       # Translation
-      use Gettext, backend: UmgHealthcareAppWeb.Gettext
+      use Gettext, backend: UmgHealthcareWeb.Gettext
 
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components
-      import UmgHealthcareAppWeb.CoreComponents
+      import UmgHealthcareWeb.CoreComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS
-      alias UmgHealthcareAppWeb.Layouts
+      alias UmgHealthcareWeb.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
@@ -99,9 +99,9 @@ defmodule UmgHealthcareAppWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: UmgHealthcareAppWeb.Endpoint,
-        router: UmgHealthcareAppWeb.Router,
-        statics: UmgHealthcareAppWeb.static_paths()
+        endpoint: UmgHealthcareWeb.Endpoint,
+        router: UmgHealthcareWeb.Router,
+        statics: UmgHealthcareWeb.static_paths()
     end
   end
 

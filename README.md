@@ -1,4 +1,4 @@
-# UmgHealthcareApp
+# UmgHealthcare
 
 To start your Phoenix server:
 

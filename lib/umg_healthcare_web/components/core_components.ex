@@ -1,4 +1,4 @@
-defmodule UmgHealthcareAppWeb.CoreComponents do
+defmodule UmgHealthcareWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
@@ -27,7 +27,7 @@ defmodule UmgHealthcareAppWeb.CoreComponents do
 
   """
   use Phoenix.Component
-  use Gettext, backend: UmgHealthcareAppWeb.Gettext
+  use Gettext, backend: UmgHealthcareWeb.Gettext
 
   alias Phoenix.LiveView.JS
 
@@ -490,9 +490,9 @@ defmodule UmgHealthcareAppWeb.CoreComponents do
     # with our gettext backend as first argument. Translations are
     # available in the errors.po file (as we use the "errors" domain).
     if count = opts[:count] do
-      Gettext.dngettext(UmgHealthcareAppWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(UmgHealthcareWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(UmgHealthcareAppWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(UmgHealthcareWeb.Gettext, "errors", msg, opts)
     end
   end
 

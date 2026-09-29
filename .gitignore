@@ -23,7 +23,7 @@ erl_crash.dump
 /tmp/
 
 # Ignore package tarball (built via "mix hex.build").
-umg_healthcare_app-*.tar
+umg_healthcare-*.tar
 
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
@@ -35,3 +35,6 @@ umg_healthcare_app-*.tar
 npm-debug.log
 /assets/node_modules/
 
+
+# Editor cache (ElixirLS)
+/.elixir_ls/

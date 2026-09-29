@@ -1,5 +1,5 @@
-defmodule UmgHealthcareAppWeb.PageControllerTest do
-  use UmgHealthcareAppWeb.ConnCase
+defmodule UmgHealthcareWeb.PageControllerTest do
+  use UmgHealthcareWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")

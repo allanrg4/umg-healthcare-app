@@ -1,4 +1,4 @@
-defmodule UmgHealthcareAppWeb.Telemetry do
+defmodule UmgHealthcareWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -53,23 +53,23 @@ defmodule UmgHealthcareAppWeb.Telemetry do
       ),
 
       # Database Metrics
-      summary("umg_healthcare_app.repo.query.total_time",
+      summary("umg_healthcare.repo.query.total_time",
         unit: {:native, :millisecond},
         description: "The sum of the other measurements"
       ),
-      summary("umg_healthcare_app.repo.query.decode_time",
+      summary("umg_healthcare.repo.query.decode_time",
         unit: {:native, :millisecond},
         description: "The time spent decoding the data received from the database"
       ),
-      summary("umg_healthcare_app.repo.query.query_time",
+      summary("umg_healthcare.repo.query.query_time",
         unit: {:native, :millisecond},
         description: "The time spent executing the query"
       ),
-      summary("umg_healthcare_app.repo.query.queue_time",
+      summary("umg_healthcare.repo.query.queue_time",
         unit: {:native, :millisecond},
         description: "The time spent waiting for a database connection"
       ),
-      summary("umg_healthcare_app.repo.query.idle_time",
+      summary("umg_healthcare.repo.query.idle_time",
         unit: {:native, :millisecond},
         description:
           "The time the connection spent waiting before being checked out for the query"
@@ -87,7 +87,7 @@ defmodule UmgHealthcareAppWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {UmgHealthcareAppWeb, :count_users, []}
+      # {UmgHealthcareWeb, :count_users, []}
     ]
   end
 end

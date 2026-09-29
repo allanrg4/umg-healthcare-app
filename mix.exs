@@ -1,9 +1,9 @@
-defmodule UmgHealthcareApp.MixProject do
+defmodule UmgHealthcare.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :umg_healthcare_app,
+      app: :umg_healthcare,
       version: "0.1.0",
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -20,7 +20,7 @@ defmodule UmgHealthcareApp.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {UmgHealthcareApp.Application, []},
+      mod: {UmgHealthcare.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -89,10 +89,10 @@ defmodule UmgHealthcareApp.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind umg_healthcare_app", "esbuild umg_healthcare_app"],
+      "assets.build": ["compile", "tailwind umg_healthcare", "esbuild umg_healthcare"],
       "assets.deploy": [
-        "tailwind umg_healthcare_app --minify",
-        "esbuild umg_healthcare_app --minify",
+        "tailwind umg_healthcare --minify",
+        "esbuild umg_healthcare --minify",
         "phx.digest"
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
