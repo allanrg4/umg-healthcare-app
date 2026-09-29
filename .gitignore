@@ -38,3 +38,6 @@ npm-debug.log
 
 # Editor cache (ElixirLS)
 /.elixir_ls/
+
+# Notas de diseño y planes locales
+/docs/
