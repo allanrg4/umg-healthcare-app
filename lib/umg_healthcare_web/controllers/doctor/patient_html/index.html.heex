@@ -1,0 +1,27 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <.header>
+    Pacientes
+    <:subtitle>Selecciona un paciente para ver su expediente y recetarle.</:subtitle>
+  </.header>
+
+  <form
+    action={~p"/doctor/patients"}
+    method="get"
+    id="patient-search"
+    class="max-w-sm mb-4 flex gap-2 items-end"
+  >
+    <.input type="search" name="q" value={@query} placeholder="Buscar por nombre" />
+    <.button>Buscar</.button>
+  </form>
+
+  <p :if={@patients == []} class="opacity-70">No hay pacientes que coincidan.</p>
+
+  <.table :if={@patients != []} id="patients" rows={@patients}>
+    <:col :let={patient} label="Nombre">{patient.user.full_name}</:col>
+    <:col :let={patient} label="Correo">{patient.user.email}</:col>
+    <:col :let={patient} label="Teléfono">{patient.phone}</:col>
+    <:action :let={patient}>
+      <.link href={~p"/doctor/patients/#{patient.id}"}>Ver expediente</.link>
+    </:action>
+  </.table>
+</Layouts.app>

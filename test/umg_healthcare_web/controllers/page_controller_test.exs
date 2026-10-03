@@ -15,6 +15,6 @@ defmodule UmgHealthcareWeb.PageControllerTest do
 
   test "GET / sends doctors to their patient list", %{conn: conn} do
     conn = conn |> log_in_user(doctor_user_fixture()) |> get(~p"/")
-    assert redirected_to(conn) == "/doctor/patients"
+    assert redirected_to(conn) == ~p"/doctor/patients"
   end
 end

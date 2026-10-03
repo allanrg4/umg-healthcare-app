@@ -45,6 +45,9 @@
           <li><.link href={~p"/routine"}>Mi rutina</.link></li>
           <li><.link href={~p"/adherence"}>Mi cumplimiento</.link></li>
         <% end %>
+        <%= if @current_scope.user.role == :doctor do %>
+          <li><.link href={~p"/doctor/patients"}>Pacientes</.link></li>
+        <% end %>
         <li>
           {@current_scope.user.email}
         </li>

@@ -43,6 +43,19 @@ defmodule UmgHealthcareWeb.Router do
     resources "/routine", ActivityController, except: [:show]
   end
 
+  # Doctor pages: require a logged-in user with the doctor role.
+  scope "/doctor", UmgHealthcareWeb.Doctor do
+    pipe_through [:browser, :doctor]
+
+    resources "/patients", PatientController, only: [:index, :show] do
+      resources "/allergies", AllergyController, only: [:create, :delete]
+      resources "/medical_records", MedicalRecordController, only: [:create]
+      resources "/prescriptions", PrescriptionController, only: [:new, :create]
+    end
+
+    patch "/prescriptions/:id/complete", PrescriptionController, :complete
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", UmgHealthcareWeb do
   #   pipe_through :api

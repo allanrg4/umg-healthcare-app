@@ -1,0 +1,134 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <.header>
+    {@record.user.full_name}
+    <:subtitle>
+      {@record.user.email}
+      <span :if={@record.birth_date}>· Nació el {format_date(@record.birth_date)}</span>
+      <span :if={@record.phone}>· Tel. {@record.phone}</span>
+    </:subtitle>
+    <:actions>
+      <.button href={~p"/doctor/patients"}>Volver</.button>
+      <.button variant="primary" href={~p"/doctor/patients/#{@patient.id}/prescriptions/new"}>
+        Nueva receta
+      </.button>
+    </:actions>
+  </.header>
+
+  <section class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Alergias</h2>
+    <p :if={@record.allergies == []} class="opacity-70 mb-4">Sin alergias registradas.</p>
+    <ul :if={@record.allergies != []} class="mb-4">
+      <li :for={allergy <- @record.allergies} class="flex items-center gap-2 py-1">
+        <strong>{allergy.substance}</strong>
+        <span class="badge">{severity_label(allergy.severity)}</span>
+        <span :if={allergy.reaction} class="opacity-70">{allergy.reaction}</span>
+        <.link
+          href={~p"/doctor/patients/#{@patient.id}/allergies/#{allergy.id}"}
+          method="delete"
+          data-confirm="¿Quitar esta alergia?"
+          class="link text-sm"
+        >
+          Quitar
+        </.link>
+      </li>
+    </ul>
+
+    <.form
+      for={@allergy_form}
+      action={~p"/doctor/patients/#{@patient.id}/allergies"}
+      id="allergy-form"
+      class="grid gap-2 md:grid-cols-4 items-end"
+    >
+      <.input field={@allergy_form[:substance]} type="text" label="Sustancia" />
+      <.input field={@allergy_form[:reaction]} type="text" label="Reacción" />
+      <.input
+        field={@allergy_form[:severity]}
+        type="select"
+        label="Gravedad"
+        options={[{"Leve", "mild"}, {"Moderada", "moderate"}, {"Grave", "severe"}]}
+      />
+      <.button variant="primary">Agregar alergia</.button>
+    </.form>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Medicaciones actuales</h2>
+    <p :if={@current == []} class="opacity-70">Sin medicación activa.</p>
+    <.table :if={@current != []} id="current-prescriptions" rows={@current}>
+      <:col :let={p} label="Medicamento">{p.medication.name}</:col>
+      <:col :let={p} label="Dosis">{p.dose}</:col>
+      <:col :let={p} label="Tomas">
+        {Enum.map_join(p.dose_schedules, ", ", &activity_label/1)}
+      </:col>
+      <:col :let={p} label="Inicio">{format_date(p.starts_on)}</:col>
+      <:col :let={p} label="Fin">{format_date(Prescription.ends_on(p))}</:col>
+      <:action :let={p}>
+        <.link
+          href={~p"/doctor/prescriptions/#{p.id}/complete"}
+          method="patch"
+          data-confirm="¿Finalizar este tratamiento?"
+        >
+          Finalizar
+        </.link>
+      </:action>
+    </.table>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Medicaciones pasadas</h2>
+    <p :if={@past == []} class="opacity-70">Sin medicaciones anteriores.</p>
+    <.table :if={@past != []} id="past-prescriptions" rows={@past}>
+      <:col :let={p} label="Medicamento">{p.medication.name}</:col>
+      <:col :let={p} label="Dosis">{p.dose}</:col>
+      <:col :let={p} label="Período">
+        {format_date(p.starts_on)} al {format_date(Prescription.ends_on(p))}
+      </:col>
+      <:col :let={p} label="Estado">{prescription_status_label(p.status)}</:col>
+    </.table>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Historial clínico</h2>
+    <p :if={@record.medical_records == []} class="opacity-70 mb-4">Sin registros.</p>
+    <.table
+      :if={@record.medical_records != []}
+      id="medical-records"
+      rows={@record.medical_records}
+    >
+      <:col :let={r} label="Fecha">{format_date(r.recorded_on)}</:col>
+      <:col :let={r} label="Tipo">{kind_label(r.kind)}</:col>
+      <:col :let={r} label="Título">{r.title}</:col>
+      <:col :let={r} label="Detalle">{r.details}</:col>
+      <:col :let={r} label="Médico">{r.doctor && r.doctor.full_name}</:col>
+    </.table>
+
+    <.form
+      for={@record_form}
+      action={~p"/doctor/patients/#{@patient.id}/medical_records"}
+      id="record-form"
+      class="mt-4 max-w-xl"
+    >
+      <.input
+        field={@record_form[:kind]}
+        type="select"
+        label="Tipo"
+        options={[
+          {"Consulta", "consultation"},
+          {"Diagnóstico", "diagnosis"},
+          {"Resultado de prueba", "test_result"}
+        ]}
+      />
+      <.input field={@record_form[:title]} type="text" label="Título" />
+      <.input field={@record_form[:recorded_on]} type="date" label="Fecha" />
+      <.input field={@record_form[:details]} type="textarea" label="Detalle" />
+      <.button variant="primary">Agregar registro</.button>
+    </.form>
+  </section>
+
+  <.adherence_summary
+    id="adherence"
+    title="Cumplimiento (últimos 30 días)"
+    summary={@adherence}
+    now={@now}
+  />
+</Layouts.app>
