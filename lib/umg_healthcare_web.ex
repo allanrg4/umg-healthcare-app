@@ -89,6 +89,7 @@ defmodule UmgHealthcareWeb do
       # Core UI components
       import UmgHealthcareWeb.CoreComponents
       import UmgHealthcareWeb.Formatters
+      import UmgHealthcareWeb.UIComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

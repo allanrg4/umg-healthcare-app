@@ -9,53 +9,96 @@
     <:actions>
       <.button href={~p"/doctor/patients"}>Volver</.button>
       <.button variant="primary" href={~p"/doctor/patients/#{@patient.id}/prescriptions/new"}>
-        Nueva receta
+        <.icon name="hero-plus" class="size-4" /> Nueva receta
       </.button>
     </:actions>
   </.header>
 
-  <section class="mb-8">
-    <h2 class="text-lg font-semibold mb-2">Alergias</h2>
-    <p :if={@record.allergies == []} class="opacity-70 mb-4">Sin alergias registradas.</p>
-    <ul :if={@record.allergies != []} class="mb-4">
-      <li :for={allergy <- @record.allergies} class="flex items-center gap-2 py-1">
-        <strong>{allergy.substance}</strong>
-        <span class="badge">{severity_label(allergy.severity)}</span>
-        <span :if={allergy.reaction} class="opacity-70">{allergy.reaction}</span>
-        <.link
-          href={~p"/doctor/patients/#{@patient.id}/allergies/#{allergy.id}"}
-          method="delete"
-          data-confirm="¿Quitar esta alergia?"
-          class="link text-sm"
-        >
-          Quitar
-        </.link>
-      </li>
-    </ul>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <.panel title="Alergias" id="allergies">
+      <p :if={@record.allergies == []} class="mb-4 text-sm text-base-content/60">
+        Sin alergias registradas.
+      </p>
+      <ul :if={@record.allergies != []} class="mb-4 divide-y divide-base-300">
+        <li :for={allergy <- @record.allergies} class="flex items-center gap-2 py-2">
+          <strong>{allergy.substance}</strong>
+          <span class={[
+            "badge badge-sm",
+            allergy.severity == :severe && "badge-error",
+            allergy.severity == :moderate && "badge-warning",
+            allergy.severity == :mild && "badge-ghost"
+          ]}>
+            {severity_label(allergy.severity)}
+          </span>
+          <span :if={allergy.reaction} class="text-sm text-base-content/60">
+            {allergy.reaction}
+          </span>
+          <.link
+            href={~p"/doctor/patients/#{@patient.id}/allergies/#{allergy.id}"}
+            method="delete"
+            data-confirm="¿Quitar esta alergia?"
+            class="ml-auto text-sm text-error hover:underline"
+          >
+            Quitar
+          </.link>
+        </li>
+      </ul>
 
-    <.form
-      for={@allergy_form}
-      action={~p"/doctor/patients/#{@patient.id}/allergies"}
-      id="allergy-form"
-      class="grid gap-2 md:grid-cols-4 items-end"
-    >
-      <.input field={@allergy_form[:substance]} type="text" label="Sustancia" />
-      <.input field={@allergy_form[:reaction]} type="text" label="Reacción" />
-      <.input
-        field={@allergy_form[:severity]}
-        type="select"
-        label="Gravedad"
-        options={[{"Leve", "mild"}, {"Moderada", "moderate"}, {"Grave", "severe"}]}
-      />
-      <.button variant="primary">Agregar alergia</.button>
-    </.form>
-  </section>
+      <.form
+        for={@allergy_form}
+        action={~p"/doctor/patients/#{@patient.id}/allergies"}
+        id="allergy-form"
+        class="grid gap-x-3 sm:grid-cols-2"
+      >
+        <.input field={@allergy_form[:substance]} type="text" label="Sustancia" />
+        <.input field={@allergy_form[:reaction]} type="text" label="Reacción" />
+        <.input
+          field={@allergy_form[:severity]}
+          type="select"
+          label="Gravedad"
+          options={[{"Leve", "mild"}, {"Moderada", "moderate"}, {"Grave", "severe"}]}
+        />
+        <div class="flex items-end pb-2">
+          <.button variant="primary" class="btn btn-primary w-full">Agregar alergia</.button>
+        </div>
+      </.form>
+    </.panel>
 
-  <section class="mb-8">
-    <h2 class="text-lg font-semibold mb-2">Medicaciones actuales</h2>
-    <p :if={@current == []} class="opacity-70">Sin medicación activa.</p>
+    <.panel title="Agregar al historial clínico" id="new-record">
+      <.form
+        for={@record_form}
+        action={~p"/doctor/patients/#{@patient.id}/medical_records"}
+        id="record-form"
+        class="grid gap-x-3 sm:grid-cols-2"
+      >
+        <.input
+          field={@record_form[:kind]}
+          type="select"
+          label="Tipo"
+          options={[
+            {"Consulta", "consultation"},
+            {"Diagnóstico", "diagnosis"},
+            {"Resultado de prueba", "test_result"}
+          ]}
+        />
+        <.input field={@record_form[:recorded_on]} type="date" label="Fecha" />
+        <div class="sm:col-span-2">
+          <.input field={@record_form[:title]} type="text" label="Título" />
+          <.input field={@record_form[:details]} type="textarea" label="Detalle" />
+        </div>
+        <div class="sm:col-span-2">
+          <.button variant="primary">Agregar registro</.button>
+        </div>
+      </.form>
+    </.panel>
+  </div>
+
+  <.panel title="Medicaciones actuales" id="current" flush>
+    <.empty_state :if={@current == []} icon="hero-beaker">Sin medicación activa.</.empty_state>
     <.table :if={@current != []} id="current-prescriptions" rows={@current}>
-      <:col :let={p} label="Medicamento">{p.medication.name}</:col>
+      <:col :let={p} label="Medicamento">
+        <span class="font-medium">{p.medication.name}</span>
+      </:col>
       <:col :let={p} label="Dosis">{p.dose}</:col>
       <:col :let={p} label="Tomas">
         {Enum.map_join(p.dose_schedules, ", ", &activity_label/1)}
@@ -67,63 +110,48 @@
           href={~p"/doctor/prescriptions/#{p.id}/complete"}
           method="patch"
           data-confirm="¿Finalizar este tratamiento?"
+          class="btn btn-ghost btn-sm"
         >
           Finalizar
         </.link>
       </:action>
     </.table>
-  </section>
+  </.panel>
 
-  <section class="mb-8">
-    <h2 class="text-lg font-semibold mb-2">Medicaciones pasadas</h2>
-    <p :if={@past == []} class="opacity-70">Sin medicaciones anteriores.</p>
-    <.table :if={@past != []} id="past-prescriptions" rows={@past}>
-      <:col :let={p} label="Medicamento">{p.medication.name}</:col>
-      <:col :let={p} label="Dosis">{p.dose}</:col>
-      <:col :let={p} label="Período">
-        {format_date(p.starts_on)} al {format_date(Prescription.ends_on(p))}
-      </:col>
-      <:col :let={p} label="Estado">{prescription_status_label(p.status)}</:col>
-    </.table>
-  </section>
-
-  <section class="mb-8">
-    <h2 class="text-lg font-semibold mb-2">Historial clínico</h2>
-    <p :if={@record.medical_records == []} class="opacity-70 mb-4">Sin registros.</p>
+  <.panel title="Historial clínico" id="history" flush>
+    <.empty_state :if={@record.medical_records == []} icon="hero-document-text">
+      Sin registros.
+    </.empty_state>
     <.table
       :if={@record.medical_records != []}
       id="medical-records"
       rows={@record.medical_records}
     >
       <:col :let={r} label="Fecha">{format_date(r.recorded_on)}</:col>
-      <:col :let={r} label="Tipo">{kind_label(r.kind)}</:col>
-      <:col :let={r} label="Título">{r.title}</:col>
+      <:col :let={r} label="Tipo">
+        <span class="badge badge-ghost badge-sm">{kind_label(r.kind)}</span>
+      </:col>
+      <:col :let={r} label="Título"><span class="font-medium">{r.title}</span></:col>
       <:col :let={r} label="Detalle">{r.details}</:col>
       <:col :let={r} label="Médico">{r.doctor && r.doctor.full_name}</:col>
     </.table>
+  </.panel>
 
-    <.form
-      for={@record_form}
-      action={~p"/doctor/patients/#{@patient.id}/medical_records"}
-      id="record-form"
-      class="mt-4 max-w-xl"
-    >
-      <.input
-        field={@record_form[:kind]}
-        type="select"
-        label="Tipo"
-        options={[
-          {"Consulta", "consultation"},
-          {"Diagnóstico", "diagnosis"},
-          {"Resultado de prueba", "test_result"}
-        ]}
-      />
-      <.input field={@record_form[:title]} type="text" label="Título" />
-      <.input field={@record_form[:recorded_on]} type="date" label="Fecha" />
-      <.input field={@record_form[:details]} type="textarea" label="Detalle" />
-      <.button variant="primary">Agregar registro</.button>
-    </.form>
-  </section>
+  <.panel title="Medicaciones pasadas" id="past" flush>
+    <.empty_state :if={@past == []} icon="hero-archive-box">
+      Sin medicaciones anteriores.
+    </.empty_state>
+    <.table :if={@past != []} id="past-prescriptions" rows={@past}>
+      <:col :let={p} label="Medicamento">{p.medication.name}</:col>
+      <:col :let={p} label="Dosis">{p.dose}</:col>
+      <:col :let={p} label="Período">
+        {format_date(p.starts_on)} al {format_date(Prescription.ends_on(p))}
+      </:col>
+      <:col :let={p} label="Estado">
+        <span class="badge badge-ghost badge-sm">{prescription_status_label(p.status)}</span>
+      </:col>
+    </.table>
+  </.panel>
 
   <.adherence_summary
     id="adherence"

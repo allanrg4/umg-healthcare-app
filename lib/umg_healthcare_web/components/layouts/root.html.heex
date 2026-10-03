@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,65 +8,86 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
-    <script>
-      (() => {
-        const systemTheme = () => matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-        const setTheme = (theme) => {
-          if (theme === "system") {
-            localStorage.removeItem("phx:theme");
-            document.documentElement.setAttribute("data-theme", systemTheme());
-            document.documentElement.setAttribute("data-theme-source", "system");
-          } else {
-            localStorage.setItem("phx:theme", theme);
-            document.documentElement.setAttribute("data-theme", theme);
-            document.documentElement.setAttribute("data-theme-source", "user");
-          }
-        };
-        if (!document.documentElement.hasAttribute("data-theme")) {
-          setTheme(localStorage.getItem("phx:theme") || "system");
-        }
-        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
-        window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
-
-        matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-          if (document.documentElement.getAttribute("data-theme-source") === "system") {
-            document.documentElement.setAttribute("data-theme", systemTheme());
-          }
-        });
-      })();
-    </script>
   </head>
-  <body>
-    <ul class="menu menu-horizontal w-full relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <%= if @current_scope do %>
-        <%= if @current_scope.user.role == :patient do %>
-          <li><.link href={~p"/dashboard"}>Mis tomas</.link></li>
-          <li><.link href={~p"/routine"}>Mi rutina</.link></li>
-          <li><.link href={~p"/adherence"}>Mi cumplimiento</.link></li>
-        <% end %>
-        <%= if @current_scope.user.role == :doctor do %>
-          <li><.link href={~p"/doctor/patients"}>Pacientes</.link></li>
-          <li><.link href={~p"/doctor/alerts"}>Alertas</.link></li>
-        <% end %>
-        <li>
-          {@current_scope.user.email}
-        </li>
-        <li>
-          <.link href={~p"/users/settings"}>Ajustes</.link>
-        </li>
-        <li>
-          <.link href={~p"/users/log-out"} method="delete">Cerrar sesión</.link>
-        </li>
-      <% else %>
-        <li>
-          <.link href={~p"/users/register"}>Registrarse</.link>
-        </li>
-        <li>
-          <.link href={~p"/users/log-in"}>Iniciar sesión</.link>
-        </li>
-      <% end %>
-    </ul>
+  <body class="min-h-screen bg-base-200 text-base-content antialiased">
+    <header class="sticky top-0 z-20 border-b border-base-300 bg-base-100/90 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
+        <a href={~p"/"} class="flex items-center gap-2 font-semibold tracking-tight">
+          <span class="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-primary-content">
+            <.icon name="hero-heart" class="size-5" />
+          </span>
+          Hospital La Paz
+        </a>
+
+        <div class="flex flex-1 flex-wrap items-center gap-1 text-sm">
+          <%= if @current_scope do %>
+            <%= if @current_scope.user.role == :patient do %>
+              <.nav_link href={~p"/dashboard"} current={@conn.request_path}>Mis tomas</.nav_link>
+              <.nav_link href={~p"/routine"} current={@conn.request_path}>Mi rutina</.nav_link>
+              <.nav_link href={~p"/adherence"} current={@conn.request_path}>
+                Mi cumplimiento
+              </.nav_link>
+            <% end %>
+            <%= if @current_scope.user.role == :doctor do %>
+              <.nav_link href={~p"/doctor/patients"} current={@conn.request_path}>
+                Pacientes
+              </.nav_link>
+              <.nav_link href={~p"/doctor/alerts"} current={@conn.request_path}>Alertas</.nav_link>
+            <% end %>
+          <% end %>
+        </div>
+
+        <div class="flex items-center gap-1 text-sm">
+          <%= if @current_scope do %>
+            <%!-- User menu: daisyUI dropdown, opens on focus (no JavaScript needed) --%>
+            <div class="dropdown dropdown-end" id="user-menu">
+              <div
+                tabindex="0"
+                role="button"
+                aria-label="Menú de usuario"
+                class="btn btn-ghost btn-circle"
+              >
+                <.icon name="hero-user-circle" class="size-7 text-base-content/70" />
+              </div>
+              <div
+                tabindex="0"
+                class="dropdown-content z-30 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+              >
+                <div class="px-3 py-2">
+                  <p class="font-medium">{@current_scope.user.full_name}</p>
+                  <p class="truncate text-xs text-base-content/60">{@current_scope.user.email}</p>
+                  <span class="mt-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                    {if @current_scope.user.role == :doctor, do: "Médico", else: "Paciente"}
+                  </span>
+                </div>
+                <ul class="menu w-full border-t border-base-300 pt-2">
+                  <li>
+                    <.link href={~p"/users/settings"}>
+                      <.icon name="hero-cog-6-tooth" class="size-4" /> Ajustes
+                    </.link>
+                  </li>
+                  <li>
+                    <.link href={~p"/users/log-out"} method="delete" class="text-error">
+                      <.icon name="hero-arrow-right-on-rectangle" class="size-4" /> Cerrar sesión
+                    </.link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          <% else %>
+            <.nav_link href={~p"/users/log-in"} current={@conn.request_path}>
+              Iniciar sesión
+            </.nav_link>
+            <.link
+              href={~p"/users/register"}
+              class="btn btn-primary btn-sm ml-1"
+            >
+              Registrarse
+            </.link>
+          <% end %>
+        </div>
+      </nav>
+    </header>
     {@inner_content}
   </body>
 </html>

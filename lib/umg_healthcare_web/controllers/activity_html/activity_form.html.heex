@@ -1,8 +1,12 @@
-<.form for={@form} action={@action} method={@method} id="activity-form" class="max-w-md">
-  <.input field={@form[:name]} type="text" label="Actividad" placeholder="Desayuno" />
-  <.input field={@form[:time_of_day]} type="time" label="Hora" />
-  <div class="flex gap-2 mt-2">
-    <.button variant="primary">{@submit_label}</.button>
-    <.button href={~p"/routine"}>Cancelar</.button>
-  </div>
-</.form>
+<div class="max-w-lg">
+  <.panel>
+    <.form for={@form} action={@action} method={@method} id="activity-form">
+      <.input field={@form[:name]} type="text" label="Actividad" placeholder="Desayuno" />
+      <.input field={@form[:time_of_day]} type="time" label="Hora" />
+      <div class="mt-4 flex justify-end gap-2">
+        <.button href={~p"/routine"}>Cancelar</.button>
+        <.button variant="primary">{@submit_label}</.button>
+      </div>
+    </.form>
+  </.panel>
+</div>

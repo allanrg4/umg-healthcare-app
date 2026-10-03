@@ -9,13 +9,13 @@ defmodule UmgHealthcareWeb.UserLive.Registration do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-sm">
+      <div class="mx-auto mt-6 max-w-sm space-y-4 rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">
         <div class="text-center">
           <.header>
             Crear una cuenta
             <:subtitle>
               ¿Ya tienes cuenta?
-              <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
+              <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
                 Inicia sesión
               </.link>
             </:subtitle>

@@ -7,7 +7,8 @@
     </:actions>
   </.header>
 
-  <div :if={@activity_options == []} class="alert alert-warning mb-4">
+  <div :if={@activity_options == []} role="alert" class="alert alert-warning">
+    <.icon name="hero-exclamation-triangle" class="size-5" />
     El paciente aún no ha definido su rutina diaria. Pídele que agregue actividades en "Mi rutina" antes de recetar.
   </div>
 
@@ -15,43 +16,51 @@
     for={@form}
     action={~p"/doctor/patients/#{@patient.id}/prescriptions"}
     id="prescription-form"
-    class="max-w-xl"
   >
-    <.input
-      field={@form[:medication_id]}
-      type="select"
-      label="Medicamento"
-      prompt="Elige un medicamento"
-      options={@medication_options}
-    />
-    <.input field={@form[:dose]} type="text" label="Dosis" placeholder="1 tableta" />
-    <.input field={@form[:instructions]} type="textarea" label="Indicaciones" />
-    <.input field={@form[:starts_on]} type="date" label="Fecha de inicio" />
-    <.input field={@form[:duration_days]} type="number" label="Duración (días)" min="1" />
-
-    <h3 class="font-semibold mt-6 mb-1">Tomas diarias</h3>
-    <p class="text-sm opacity-70 mb-2">
-      Llena solo las filas que necesites (hasta tres tomas al día).
-    </p>
-
-    <.inputs_for :let={schedule} field={@form[:dose_schedules]}>
-      <div class="grid gap-2 md:grid-cols-2 mb-2">
+    <div class="grid gap-6 lg:grid-cols-2">
+      <.panel title="Medicamento y duración">
         <.input
-          field={schedule[:activity_id]}
+          field={@form[:medication_id]}
           type="select"
-          label="Actividad"
-          prompt="Sin usar"
-          options={@activity_options}
+          label="Medicamento"
+          prompt="Elige un medicamento"
+          options={@medication_options}
         />
-        <.input field={schedule[:offset_minutes]} type="number" label="Desfase (minutos)" />
-      </div>
-    </.inputs_for>
+        <.input field={@form[:dose]} type="text" label="Dosis" placeholder="1 tableta" />
+        <div class="grid gap-x-3 sm:grid-cols-2">
+          <.input field={@form[:starts_on]} type="date" label="Fecha de inicio" />
+          <.input field={@form[:duration_days]} type="number" label="Duración (días)" min="1" />
+        </div>
+        <.input field={@form[:instructions]} type="textarea" label="Indicaciones" />
+      </.panel>
 
-    <p :for={error <- @form[:dose_schedules].errors} class="text-error text-sm">
-      {translate_error(error)}
-    </p>
+      <.panel title="Tomas diarias">
+        <p class="mb-4 text-sm text-base-content/60">
+          Llena solo las filas que necesites (hasta tres tomas al día). El desfase es en minutos:
+          30 significa "30 minutos después", -15 "15 minutos antes".
+        </p>
 
-    <div class="mt-4">
+        <.inputs_for :let={schedule} field={@form[:dose_schedules]}>
+          <div class="mb-2 grid gap-x-3 rounded-box bg-base-200 p-3 sm:grid-cols-[2fr_1fr]">
+            <.input
+              field={schedule[:activity_id]}
+              type="select"
+              label={"Toma #{schedule.index + 1}"}
+              prompt="Sin usar"
+              options={@activity_options}
+            />
+            <.input field={schedule[:offset_minutes]} type="number" label="Desfase (min)" />
+          </div>
+        </.inputs_for>
+
+        <p :for={error <- @form[:dose_schedules].errors} class="text-sm text-error">
+          {translate_error(error)}
+        </p>
+      </.panel>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-2">
+      <.button href={~p"/doctor/patients/#{@patient.id}"}>Cancelar</.button>
       <.button variant="primary">Guardar receta</.button>
     </div>
   </.form>

@@ -5,29 +5,35 @@
       Tus tomas se programan a partir de estas actividades. Si cambias una hora, las tomas de mañana se ajustan solas.
     </:subtitle>
     <:actions>
-      <.button href={~p"/dashboard"}>Volver al panel</.button>
-      <.button variant="primary" href={~p"/routine/new"}>Nueva actividad</.button>
+      <.button variant="primary" href={~p"/routine/new"}>
+        <.icon name="hero-plus" class="size-4" /> Nueva actividad
+      </.button>
     </:actions>
   </.header>
 
-  <p :if={@activities == []} class="opacity-70">
-    Aún no tienes actividades. Agrega al menos una para que tu médico pueda asociar tus tomas.
-  </p>
+  <.panel flush>
+    <.empty_state :if={@activities == []} icon="hero-sun">
+      Aún no tienes actividades. Agrega al menos una para que tu médico pueda asociar tus tomas.
+    </.empty_state>
 
-  <.table :if={@activities != []} id="activities" rows={@activities}>
-    <:col :let={activity} label="Hora">{format_time(activity.time_of_day)}</:col>
-    <:col :let={activity} label="Actividad">{activity.name}</:col>
-    <:action :let={activity}>
-      <.link href={~p"/routine/#{activity.id}/edit"}>Editar</.link>
-    </:action>
-    <:action :let={activity}>
-      <.link
-        href={~p"/routine/#{activity.id}"}
-        method="delete"
-        data-confirm="¿Eliminar esta actividad?"
-      >
-        Eliminar
-      </.link>
-    </:action>
-  </.table>
+    <.table :if={@activities != []} id="activities" rows={@activities}>
+      <:col :let={activity} label="Hora">
+        <span class="font-mono font-medium">{format_time(activity.time_of_day)}</span>
+      </:col>
+      <:col :let={activity} label="Actividad">{activity.name}</:col>
+      <:action :let={activity}>
+        <.link href={~p"/routine/#{activity.id}/edit"} class="btn btn-ghost btn-sm">Editar</.link>
+      </:action>
+      <:action :let={activity}>
+        <.link
+          href={~p"/routine/#{activity.id}"}
+          method="delete"
+          data-confirm="¿Eliminar esta actividad?"
+          class="btn btn-ghost btn-sm text-error"
+        >
+          Eliminar
+        </.link>
+      </:action>
+    </.table>
+  </.panel>
 </Layouts.app>

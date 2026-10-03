@@ -6,26 +6,46 @@
     </:subtitle>
   </.header>
 
-  <p :if={@alerts == []} class="opacity-70">No hay recetas por renovar.</p>
+  <.panel flush>
+    <.empty_state :if={@alerts == []} icon="hero-check-circle">
+      No hay recetas por renovar.
+    </.empty_state>
 
-  <.table :if={@alerts != []} id="renewal-alerts" rows={@alerts}>
-    <:col :let={p} label="Paciente">{p.patient.user.full_name}</:col>
-    <:col :let={p} label="Medicamento">{p.medication.name} · {p.dose}</:col>
-    <:col :let={p} label="Termina">{format_date(Prescription.ends_on(p))}</:col>
-    <:col :let={p} label="Estado">
-      {days_label(Date.diff(Prescription.ends_on(p), @today))}
-    </:col>
-    <:action :let={p}>
-      <.link href={~p"/doctor/patients/#{p.patient_id}/prescriptions/new"}>Nueva receta</.link>
-    </:action>
-    <:action :let={p}>
-      <.link
-        href={~p"/doctor/alerts/#{p.id}/renew"}
-        method="patch"
-        data-confirm="¿Marcar esta receta como renovada?"
-      >
-        Marcar renovada
-      </.link>
-    </:action>
-  </.table>
+    <.table :if={@alerts != []} id="renewal-alerts" rows={@alerts}>
+      <:col :let={p} label="Paciente">
+        <span class="font-medium">{p.patient.user.full_name}</span>
+      </:col>
+      <:col :let={p} label="Medicamento">{p.medication.name} · {p.dose}</:col>
+      <:col :let={p} label="Termina">{format_date(Prescription.ends_on(p))}</:col>
+      <:col :let={p} label="Estado">
+        <span class={[
+          "badge badge-sm",
+          if(Date.diff(Prescription.ends_on(p), @today) < 0,
+            do: "badge-error",
+            else: "badge-warning"
+          )
+        ]}>
+          {days_label(Date.diff(Prescription.ends_on(p), @today))}
+        </span>
+      </:col>
+      <:action :let={p}>
+        <.link
+          href={~p"/doctor/patients/#{p.patient_id}/prescriptions/new"}
+          class="btn btn-ghost btn-sm"
+        >
+          Nueva receta
+        </.link>
+      </:action>
+      <:action :let={p}>
+        <.link
+          href={~p"/doctor/alerts/#{p.id}/renew"}
+          method="patch"
+          data-confirm="¿Marcar esta receta como renovada?"
+          class="btn btn-primary btn-sm"
+        >
+          Marcar renovada
+        </.link>
+      </:action>
+    </.table>
+  </.panel>
 </Layouts.app>

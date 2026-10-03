@@ -5,47 +5,73 @@
       Hoy es {format_date(@today)}, son las {format_time(@now)}. Pulsa "Actualizar" para ver la hora al día.
     </:subtitle>
     <:actions>
-      <.button href={~p"/dashboard"} id="refresh-button">Actualizar</.button>
-      <.button href={~p"/adherence"}>Mi cumplimiento</.button>
-      <.button href={~p"/routine"}>Mi rutina</.button>
+      <.button href={~p"/dashboard"} id="refresh-button">
+        <.icon name="hero-arrow-path" class="size-4" /> Actualizar
+      </.button>
     </:actions>
   </.header>
 
-  <div :if={@upcoming == []} class="alert alert-info mb-6">
-    No tienes tomas pendientes por ahora.
-  </div>
+  <.panel :if={@upcoming == []}>
+    <.empty_state icon="hero-check-badge">
+      No tienes tomas pendientes por ahora.
+    </.empty_state>
+  </.panel>
 
-  <div :for={{scheduled_at, doses} <- @upcoming} class="card bg-base-200 mb-4">
-    <div class="card-body">
-      <h2 class="card-title">
-        {relative_time(scheduled_at, @now)} · {format_time(scheduled_at)}
-      </h2>
-      <ul>
-        <li :for={dose <- doses} class="flex items-center justify-between gap-4 py-1">
-          <span>
-            <strong>{dose.dose_schedule.prescription.medication.name}</strong>
-            · {dose.dose_schedule.prescription.dose}
-            <span class="text-sm opacity-70">({activity_label(dose.dose_schedule)})</span>
-          </span>
+  <div :if={@upcoming != []} class="grid gap-4 md:grid-cols-2">
+    <div
+      :for={{{scheduled_at, doses}, index} <- Enum.with_index(@upcoming)}
+      class={[
+        "rounded-box border bg-base-100 p-5 shadow-sm",
+        if(index == 0, do: "border-primary/40 ring-2 ring-primary/15", else: "border-base-300")
+      ]}
+    >
+      <div class="mb-3 flex items-baseline justify-between gap-3">
+        <p class="text-2xl font-bold tracking-tight text-primary">
+          {relative_time(scheduled_at, @now)}
+        </p>
+        <span class="text-sm text-base-content/60">
+          <.icon name="hero-clock" class="size-4" /> {format_time(scheduled_at)}
+        </span>
+      </div>
+      <ul class="divide-y divide-base-300">
+        <li :for={dose <- doses} class="flex items-center justify-between gap-4 py-2">
+          <div>
+            <p class="font-medium">
+              {dose.dose_schedule.prescription.medication.name}
+              <span class="font-normal text-base-content/60">
+                · {dose.dose_schedule.prescription.dose}
+              </span>
+            </p>
+            <p class="text-sm text-base-content/60">{activity_label(dose.dose_schedule)}</p>
+          </div>
           <.form
             for={%{}}
             action={~p"/doses/#{dose.id}/take"}
             method="post"
             id={"take-dose-#{dose.id}"}
           >
-            <.button variant="primary">Marcar tomada</.button>
+            <.button variant="primary" class="btn btn-primary btn-sm">
+              <.icon name="hero-check" class="size-4" /> Marcar tomada
+            </.button>
           </.form>
         </li>
       </ul>
     </div>
   </div>
 
-  <h2 class="text-lg font-semibold mt-8 mb-2">Todas las tomas de hoy</h2>
-  <p :if={@today_doses == []} class="opacity-70">Hoy no tienes tomas programadas.</p>
-  <.table :if={@today_doses != []} id="today-doses" rows={@today_doses}>
-    <:col :let={dose} label="Hora">{format_time(dose.scheduled_at)}</:col>
-    <:col :let={dose} label="Medicamento">{dose.dose_schedule.prescription.medication.name}</:col>
-    <:col :let={dose} label="Cuándo">{activity_label(dose.dose_schedule)}</:col>
-    <:col :let={dose} label="Estado">{status_label(Scheduler.status(dose, @now))}</:col>
-  </.table>
+  <.panel title="Todas las tomas de hoy" flush>
+    <.empty_state :if={@today_doses == []} icon="hero-calendar">
+      Hoy no tienes tomas programadas.
+    </.empty_state>
+    <.table :if={@today_doses != []} id="today-doses" rows={@today_doses}>
+      <:col :let={dose} label="Hora">{format_time(dose.scheduled_at)}</:col>
+      <:col :let={dose} label="Medicamento">
+        <span class="font-medium">{dose.dose_schedule.prescription.medication.name}</span>
+      </:col>
+      <:col :let={dose} label="Cuándo">{activity_label(dose.dose_schedule)}</:col>
+      <:col :let={dose} label="Estado">
+        <.status_badge status={Scheduler.status(dose, @now)} />
+      </:col>
+    </.table>
+  </.panel>
 </Layouts.app>

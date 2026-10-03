@@ -35,8 +35,8 @@ defmodule UmgHealthcareWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <main class="px-4 py-12 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl space-y-4">
+    <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="space-y-6">
         {render_slot(@inner_block)}
       </div>
     </main>
@@ -94,40 +94,25 @@ defmodule UmgHealthcareWeb.Layouts do
     """
   end
 
-  @doc """
-  Provides dark vs light theme toggle based on themes defined in app.css.
+  @doc "Top navigation link, highlighted when `current` path starts with `href`."
+  attr :href, :string, required: true
+  attr :current, :string, required: true
+  slot :inner_block, required: true
 
-  See <head> in root.html.heex which applies the theme before page load.
-  """
-  def theme_toggle(assigns) do
+  def nav_link(assigns) do
     ~H"""
-    <div class="card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full">
-      <div class="absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&]:left-1/3 [[data-theme=dark]_&]:left-2/3 [[data-theme-source=system]_&]:!left-0 transition-[left]" />
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="system"
-      >
-        <.icon name="hero-computer-desktop-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="light"
-      >
-        <.icon name="hero-sun-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="dark"
-      >
-        <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-    </div>
+    <.link
+      href={@href}
+      class={[
+        "rounded-lg px-3 py-2 transition-colors",
+        if(String.starts_with?(@current, @href),
+          do: "bg-primary/10 font-medium text-primary",
+          else: "text-base-content/70 hover:bg-base-200 hover:text-base-content"
+        )
+      ]}
+    >
+      {render_slot(@inner_block)}
+    </.link>
     """
   end
 end

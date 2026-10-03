@@ -4,32 +4,46 @@
     <:subtitle>Selecciona un paciente para ver su expediente y recetarle.</:subtitle>
   </.header>
 
-  <%!-- Plain input: <.input> adds label spacing that misaligns a one-line search bar --%>
-  <form
-    action={~p"/doctor/patients"}
-    method="get"
-    id="patient-search"
-    class="max-w-md mb-6 flex items-center gap-2"
-  >
-    <input
-      type="search"
-      name="q"
-      id="patient-search-q"
-      value={@query}
-      placeholder="Buscar por nombre"
-      class="input flex-1"
-    />
-    <.button>Buscar</.button>
-  </form>
+  <.panel flush>
+    <%!-- Plain input: <.input> adds label spacing that misaligns a one-line search bar --%>
+    <form
+      action={~p"/doctor/patients"}
+      method="get"
+      id="patient-search"
+      class="flex items-center gap-2 border-b border-base-300 px-6 py-4"
+    >
+      <label class="input flex-1">
+        <span class="hero-magnifying-glass size-4 opacity-50" />
+        <input
+          type="search"
+          name="q"
+          id="patient-search-q"
+          value={@query}
+          placeholder="Buscar por nombre"
+        />
+      </label>
+      <.button>Buscar</.button>
+    </form>
 
-  <p :if={@patients == []} class="opacity-70">No hay pacientes que coincidan.</p>
+    <.empty_state :if={@patients == []} icon="hero-user-group">
+      No hay pacientes que coincidan.
+    </.empty_state>
 
-  <.table :if={@patients != []} id="patients" rows={@patients}>
-    <:col :let={patient} label="Nombre">{patient.user.full_name}</:col>
-    <:col :let={patient} label="Correo">{patient.user.email}</:col>
-    <:col :let={patient} label="Teléfono">{patient.phone}</:col>
-    <:action :let={patient}>
-      <.link href={~p"/doctor/patients/#{patient.id}"}>Ver expediente</.link>
-    </:action>
-  </.table>
+    <.table :if={@patients != []} id="patients" rows={@patients}>
+      <:col :let={patient} label="Nombre">
+        <span class="font-medium">{patient.user.full_name}</span>
+      </:col>
+      <:col :let={patient} label="Correo">{patient.user.email}</:col>
+      <:col :let={patient} label="Teléfono">{patient.phone || "—"}</:col>
+      <:action :let={patient}>
+        <.button
+          href={~p"/doctor/patients/#{patient.id}"}
+          class="btn btn-primary btn-sm"
+          id={"open-record-#{patient.id}"}
+        >
+          Ver expediente
+        </.button>
+      </:action>
+    </.table>
+  </.panel>
 </Layouts.app>
