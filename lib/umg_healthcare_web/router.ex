@@ -17,10 +17,29 @@ defmodule UmgHealthcareWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :patient do
+    plug :require_authenticated_user
+    plug :require_patient_user
+  end
+
+  pipeline :doctor do
+    plug :require_authenticated_user
+    plug :require_doctor_user
+  end
+
   scope "/", UmgHealthcareWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+  end
+
+  # Patient pages: require a logged-in user with the patient role.
+  scope "/", UmgHealthcareWeb do
+    pipe_through [:browser, :patient]
+
+    get "/dashboard", DashboardController, :index
+    post "/doses/:id/take", DoseController, :take
+    resources "/routine", ActivityController, except: [:show]
   end
 
   # Other scopes may use custom stacks.

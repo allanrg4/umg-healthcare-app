@@ -1,0 +1,33 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <.header>
+    Mi rutina diaria
+    <:subtitle>
+      Tus tomas se programan a partir de estas actividades. Si cambias una hora, las tomas de mañana se ajustan solas.
+    </:subtitle>
+    <:actions>
+      <.button href={~p"/dashboard"}>Volver al panel</.button>
+      <.button variant="primary" href={~p"/routine/new"}>Nueva actividad</.button>
+    </:actions>
+  </.header>
+
+  <p :if={@activities == []} class="opacity-70">
+    Aún no tienes actividades. Agrega al menos una para que tu médico pueda asociar tus tomas.
+  </p>
+
+  <.table :if={@activities != []} id="activities" rows={@activities}>
+    <:col :let={activity} label="Hora">{format_time(activity.time_of_day)}</:col>
+    <:col :let={activity} label="Actividad">{activity.name}</:col>
+    <:action :let={activity}>
+      <.link href={~p"/routine/#{activity.id}/edit"}>Editar</.link>
+    </:action>
+    <:action :let={activity}>
+      <.link
+        href={~p"/routine/#{activity.id}"}
+        method="delete"
+        data-confirm="¿Eliminar esta actividad?"
+      >
+        Eliminar
+      </.link>
+    </:action>
+  </.table>
+</Layouts.app>

@@ -1,0 +1,50 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <.header>
+    Mis próximas tomas
+    <:subtitle>
+      Hoy es {format_date(@today)}, son las {format_time(@now)}. Pulsa "Actualizar" para ver la hora al día.
+    </:subtitle>
+    <:actions>
+      <.button href={~p"/dashboard"} id="refresh-button">Actualizar</.button>
+      <.button href={~p"/routine"}>Mi rutina</.button>
+    </:actions>
+  </.header>
+
+  <div :if={@upcoming == []} class="alert alert-info mb-6">
+    No tienes tomas pendientes por ahora.
+  </div>
+
+  <div :for={{scheduled_at, doses} <- @upcoming} class="card bg-base-200 mb-4">
+    <div class="card-body">
+      <h2 class="card-title">
+        {relative_time(scheduled_at, @now)} · {format_time(scheduled_at)}
+      </h2>
+      <ul>
+        <li :for={dose <- doses} class="flex items-center justify-between gap-4 py-1">
+          <span>
+            <strong>{dose.dose_schedule.prescription.medication.name}</strong>
+            · {dose.dose_schedule.prescription.dose}
+            <span class="text-sm opacity-70">({activity_label(dose.dose_schedule)})</span>
+          </span>
+          <.form
+            for={%{}}
+            action={~p"/doses/#{dose.id}/take"}
+            method="post"
+            id={"take-dose-#{dose.id}"}
+          >
+            <.button variant="primary">Marcar tomada</.button>
+          </.form>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Todas las tomas de hoy</h2>
+  <p :if={@today_doses == []} class="opacity-70">Hoy no tienes tomas programadas.</p>
+  <.table :if={@today_doses != []} id="today-doses" rows={@today_doses}>
+    <:col :let={dose} label="Hora">{format_time(dose.scheduled_at)}</:col>
+    <:col :let={dose} label="Medicamento">{dose.dose_schedule.prescription.medication.name}</:col>
+    <:col :let={dose} label="Cuándo">{activity_label(dose.dose_schedule)}</:col>
+    <:col :let={dose} label="Estado">{status_label(Scheduler.status(dose, @now))}</:col>
+  </.table>
+</Layouts.app>

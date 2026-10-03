@@ -43,6 +43,8 @@ defmodule UmgHealthcareWeb do
       use Gettext, backend: UmgHealthcareWeb.Gettext
 
       import Plug.Conn
+      # Controllers build forms from changesets and pass them to the templates.
+      import Phoenix.Component, only: [to_form: 1]
 
       unquote(verified_routes())
     end
@@ -86,6 +88,7 @@ defmodule UmgHealthcareWeb do
       import Phoenix.HTML
       # Core UI components
       import UmgHealthcareWeb.CoreComponents
+      import UmgHealthcareWeb.Formatters
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

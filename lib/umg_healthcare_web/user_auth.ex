@@ -6,6 +6,7 @@ defmodule UmgHealthcareWeb.UserAuth do
 
   alias UmgHealthcare.Accounts
   alias UmgHealthcare.Accounts.Scope
+  alias UmgHealthcare.Patients
 
   # Make the remember me cookie valid for 14 days. This should match
   # the session validity setting in UserToken.
@@ -246,31 +247,6 @@ defmodule UmgHealthcareWeb.UserAuth do
     end
   end
 
-  def on_mount(:require_patient, params, session, socket) do
-    require_role(:patient, params, session, socket)
-  end
-
-  def on_mount(:require_doctor, params, session, socket) do
-    require_role(:doctor, params, session, socket)
-  end
-
-  defp require_role(role, params, session, socket) do
-    case on_mount(:require_authenticated, params, session, socket) do
-      {:cont, socket} ->
-        if socket.assigns.current_scope.user.role == role do
-          {:cont, socket}
-        else
-          {:halt,
-           socket
-           |> Phoenix.LiveView.put_flash(:error, "No tienes acceso a esa sección.")
-           |> Phoenix.LiveView.redirect(to: signed_in_path(socket))}
-        end
-
-      halt ->
-        halt
-    end
-  end
-
   defp mount_current_scope(socket, session) do
     Phoenix.Component.assign_new(socket, :current_scope, fn ->
       {user, _} =
@@ -303,6 +279,28 @@ defmodule UmgHealthcareWeb.UserAuth do
       |> redirect(to: ~p"/users/log-in")
       |> halt()
     end
+  end
+
+  # Only patients pass; leaves the patient profile in `conn.assigns.patient`.
+  def require_patient_user(conn, _opts) do
+    case conn.assigns.current_scope.user do
+      %{role: :patient} = user -> assign(conn, :patient, Patients.get_patient_for_user!(user))
+      _ -> deny(conn)
+    end
+  end
+
+  def require_doctor_user(conn, _opts) do
+    case conn.assigns.current_scope.user do
+      %{role: :doctor} -> conn
+      _ -> deny(conn)
+    end
+  end
+
+  defp deny(conn) do
+    conn
+    |> put_flash(:error, "No tienes acceso a esa sección.")
+    |> redirect(to: ~p"/")
+    |> halt()
   end
 
   defp maybe_store_return_to(%{method: "GET"} = conn) do
