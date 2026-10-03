@@ -9,7 +9,7 @@ defmodule UmgHealthcareWeb.UserSessionController do
   end
 
   def create(conn, params) do
-    create(conn, params, "Welcome back!")
+    create(conn, params, "¡Bienvenido de nuevo!")
   end
 
   # magic link login
@@ -40,7 +40,7 @@ defmodule UmgHealthcareWeb.UserSessionController do
     else
       # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
       conn
-      |> put_flash(:error, "Invalid email or password")
+      |> put_flash(:error, "Correo o contraseña incorrectos")
       |> put_flash(:email, String.slice(email, 0, 160))
       |> redirect(to: ~p"/users/log-in")
     end
@@ -61,7 +61,7 @@ defmodule UmgHealthcareWeb.UserSessionController do
 
   def delete(conn, _params) do
     conn
-    |> put_flash(:info, "Logged out successfully.")
+    |> put_flash(:info, "Sesión cerrada correctamente.")
     |> UserAuth.log_out_user()
   end
 end

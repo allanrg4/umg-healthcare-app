@@ -93,7 +93,7 @@ defmodule UmgHealthcareWeb.UserLive.ConfirmationTest do
       conn = follow_trigger_action(form, conn)
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
-               "Welcome back!"
+               "¡Bienvenido de nuevo!"
 
       assert Accounts.get_user!(user.id).confirmed_at == user.confirmed_at
 
