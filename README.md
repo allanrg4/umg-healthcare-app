@@ -25,6 +25,21 @@ and Postgres.
 
 Open [http://localhost:4000](http://localhost:4000).
 
+## Demo data
+
+`mix setup` (or `mix run priv/repo/seeds.exs`) loads a medication catalog and
+demo users. Every demo user shares the password `demo-lapaz-2026`.
+
+| Email | Role | What to look at |
+|---|---|---|
+| `medico@lapaz.test` | Doctor | Patient records, new prescriptions and two renewal alerts |
+| `ana@lapaz.test` | Patient | Routine, upcoming doses, 12 days of adherence history |
+| `carlos@lapaz.test` | Patient | Two doses a day, 7 days of adherence history |
+| `sofia@lapaz.test` | Patient | New patient without routine or prescriptions |
+
+Doses and dates are generated relative to the day you load the data. To start
+over with fresh data: `mix ecto.reset`.
+
 ## Tests
 
     mix test
