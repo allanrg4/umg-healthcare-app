@@ -54,6 +54,9 @@ defmodule UmgHealthcareWeb.Router do
     end
 
     patch "/prescriptions/:id/complete", PrescriptionController, :complete
+
+    get "/alerts", RenewalAlertController, :index
+    patch "/alerts/:id/renew", RenewalAlertController, :renew
   end
 
   # Other scopes may use custom stacks.
