@@ -1,11 +1,4 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     UmgHealthcare.Repo.insert!(%UmgHealthcare.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+# Initial data. Runs with `mix ecto.setup` or `mix run priv/repo/seeds.exs`
+# and is safe to run more than once.
+
+UmgHealthcare.Medications.seed_catalog()
