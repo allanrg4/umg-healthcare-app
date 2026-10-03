@@ -4,13 +4,21 @@
     <:subtitle>Selecciona un paciente para ver su expediente y recetarle.</:subtitle>
   </.header>
 
+  <%!-- Plain input: <.input> adds label spacing that misaligns a one-line search bar --%>
   <form
     action={~p"/doctor/patients"}
     method="get"
     id="patient-search"
-    class="max-w-sm mb-4 flex gap-2 items-end"
+    class="max-w-md mb-6 flex items-center gap-2"
   >
-    <.input type="search" name="q" value={@query} placeholder="Buscar por nombre" />
+    <input
+      type="search"
+      name="q"
+      id="patient-search-q"
+      value={@query}
+      placeholder="Buscar por nombre"
+      class="input flex-1"
+    />
     <.button>Buscar</.button>
   </form>
 
