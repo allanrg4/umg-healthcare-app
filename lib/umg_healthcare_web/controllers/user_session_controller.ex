@@ -56,7 +56,7 @@ defmodule UmgHealthcareWeb.UserSessionController do
 
     conn
     |> put_session(:user_return_to, ~p"/users/settings")
-    |> create(params, "Password updated successfully!")
+    |> create(params, "¡Contraseña actualizada correctamente!")
   end
 
   def delete(conn, _params) do

@@ -9,62 +9,69 @@ defmodule UmgHealthcareWeb.UserLive.Settings do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="text-center">
+      <div class="mx-auto max-w-xl space-y-6">
         <.header>
-          Account Settings
-          <:subtitle>Manage your account email address and password settings</:subtitle>
+          Ajustes de la cuenta
+          <:subtitle>Cambia el correo electrónico y la contraseña de tu cuenta.</:subtitle>
         </.header>
+
+        <.panel title="Correo electrónico">
+          <.form
+            for={@email_form}
+            id="email_form"
+            phx-submit="update_email"
+            phx-change="validate_email"
+          >
+            <.input
+              field={@email_form[:email]}
+              type="email"
+              label="Correo electrónico"
+              autocomplete="username"
+              spellcheck="false"
+              required
+            />
+            <.button variant="primary" phx-disable-with="Cambiando...">Cambiar correo</.button>
+          </.form>
+        </.panel>
+
+        <.panel title="Contraseña">
+          <.form
+            for={@password_form}
+            id="password_form"
+            action={~p"/users/update-password"}
+            method="post"
+            phx-change="validate_password"
+            phx-submit="update_password"
+            phx-trigger-action={@trigger_submit}
+          >
+            <input
+              name={@password_form[:email].name}
+              type="hidden"
+              id="hidden_user_email"
+              spellcheck="false"
+              value={@current_email}
+            />
+            <.input
+              field={@password_form[:password]}
+              type="password"
+              label="Nueva contraseña"
+              autocomplete="new-password"
+              spellcheck="false"
+              required
+            />
+            <.input
+              field={@password_form[:password_confirmation]}
+              type="password"
+              label="Confirma la nueva contraseña"
+              autocomplete="new-password"
+              spellcheck="false"
+            />
+            <.button variant="primary" phx-disable-with="Guardando...">
+              Guardar contraseña
+            </.button>
+          </.form>
+        </.panel>
       </div>
-
-      <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
-        <.input
-          field={@email_form[:email]}
-          type="email"
-          label="Email"
-          autocomplete="username"
-          spellcheck="false"
-          required
-        />
-        <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
-      </.form>
-
-      <div class="divider" />
-
-      <.form
-        for={@password_form}
-        id="password_form"
-        action={~p"/users/update-password"}
-        method="post"
-        phx-change="validate_password"
-        phx-submit="update_password"
-        phx-trigger-action={@trigger_submit}
-      >
-        <input
-          name={@password_form[:email].name}
-          type="hidden"
-          id="hidden_user_email"
-          spellcheck="false"
-          value={@current_email}
-        />
-        <.input
-          field={@password_form[:password]}
-          type="password"
-          label="New password"
-          autocomplete="new-password"
-          spellcheck="false"
-          required
-        />
-        <.input
-          field={@password_form[:password_confirmation]}
-          type="password"
-          label="Confirm new password"
-          autocomplete="new-password"
-          spellcheck="false"
-        />
-        <.button variant="primary" phx-disable-with="Saving...">
-          Save Password
-        </.button>
-      </.form>
     </Layouts.app>
     """
   end
@@ -74,10 +81,10 @@ defmodule UmgHealthcareWeb.UserLive.Settings do
     socket =
       case Accounts.update_user_email(socket.assigns.current_scope.user, token) do
         {:ok, _user} ->
-          put_flash(socket, :info, "Email changed successfully.")
+          put_flash(socket, :info, "Correo actualizado correctamente.")
 
         {:error, _} ->
-          put_flash(socket, :error, "Email change link is invalid or it has expired.")
+          put_flash(socket, :error, "El enlace para cambiar el correo no es válido o ya expiró.")
       end
 
     {:ok, push_navigate(socket, to: ~p"/users/settings")}
@@ -124,7 +131,7 @@ defmodule UmgHealthcareWeb.UserLive.Settings do
           &url(~p"/users/settings/confirm-email/#{&1}")
         )
 
-        info = "A link to confirm your email change has been sent to the new address."
+        info = "Te enviamos un enlace al nuevo correo para confirmar el cambio."
         {:noreply, socket |> put_flash(:info, info)}
 
       changeset ->
