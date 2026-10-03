@@ -10,6 +10,7 @@ defmodule UmgHealthcare.Patients.Patient do
 
     belongs_to :user, UmgHealthcare.Accounts.User
     has_many :allergies, UmgHealthcare.Patients.Allergy
+    has_many :medical_records, UmgHealthcare.Patients.MedicalRecord
 
     timestamps(type: :utc_datetime)
   end

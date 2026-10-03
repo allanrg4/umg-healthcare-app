@@ -84,4 +84,63 @@ defmodule UmgHealthcare.PatientsTest do
       assert [] = Patients.list_allergies(patient)
     end
   end
+
+  describe "medical records" do
+    test "create_medical_record/3 stores who recorded it" do
+      patient = patient_fixture()
+      doctor = doctor_user_fixture(full_name: "Dr. Luis Gómez")
+
+      assert {:ok, record} =
+               Patients.create_medical_record(patient, doctor, %{
+                 kind: :diagnosis,
+                 title: "Hipertensión",
+                 details: "Presión 150/95",
+                 recorded_on: ~D[2026-09-20]
+               })
+
+      assert record.doctor_id == doctor.id
+
+      assert [%{title: "Hipertensión", doctor: %{full_name: "Dr. Luis Gómez"}}] =
+               Patients.list_medical_records(patient)
+    end
+
+    test "create_medical_record/3 requires kind, title and date" do
+      assert {:error, changeset} =
+               Patients.create_medical_record(patient_fixture(), doctor_user_fixture(), %{})
+
+      assert %{
+               kind: ["can't be blank"],
+               title: ["can't be blank"],
+               recorded_on: ["can't be blank"]
+             } =
+               errors_on(changeset)
+    end
+
+    test "only doctors can record entries" do
+      assert_raise FunctionClauseError, fn ->
+        Patients.create_medical_record(patient_fixture(), patient_user_fixture(), %{})
+      end
+    end
+
+    test "list_medical_records/1 returns newest first" do
+      patient = patient_fixture()
+      doctor = doctor_user_fixture()
+      medical_record_fixture(patient, doctor, %{title: "Antigua", recorded_on: ~D[2026-01-01]})
+      medical_record_fixture(patient, doctor, %{title: "Reciente", recorded_on: ~D[2026-09-01]})
+
+      assert [%{title: "Reciente"}, %{title: "Antigua"}] = Patients.list_medical_records(patient)
+    end
+
+    test "record_for_patient/1 preloads everything the doctor needs" do
+      patient = patient_fixture()
+      allergy_fixture(patient)
+      medical_record_fixture(patient, doctor_user_fixture())
+
+      record = Patients.record_for_patient(patient)
+
+      assert record.user.full_name == "Ana López"
+      assert [%{substance: "Penicilina"}] = record.allergies
+      assert [%{doctor: %{role: :doctor}}] = record.medical_records
+    end
+  end
 end

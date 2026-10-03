@@ -1,10 +1,10 @@
 defmodule UmgHealthcare.Patients do
-  @moduledoc "Patient profiles and their allergies."
+  @moduledoc "Patient profiles, their allergies and clinical history."
 
   import Ecto.Query, warn: false
 
   alias UmgHealthcare.Accounts.User
-  alias UmgHealthcare.Patients.{Allergy, Patient}
+  alias UmgHealthcare.Patients.{Allergy, MedicalRecord, Patient}
   alias UmgHealthcare.Repo
 
   ## Patients
@@ -68,5 +68,38 @@ defmodule UmgHealthcare.Patients do
 
   def change_allergy(%Allergy{} = allergy, attrs \\ %{}) do
     Allergy.changeset(allergy, attrs)
+  end
+
+  ## Medical records
+
+  def list_medical_records(%Patient{id: patient_id}) do
+    MedicalRecord
+    |> where(patient_id: ^patient_id)
+    |> order_by(desc: :recorded_on, desc: :id)
+    |> preload(:doctor)
+    |> Repo.all()
+  end
+
+  # Only doctors can write in the clinical history.
+  def create_medical_record(%Patient{id: patient_id}, %User{role: :doctor, id: doctor_id}, attrs) do
+    %MedicalRecord{patient_id: patient_id, doctor_id: doctor_id}
+    |> MedicalRecord.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_medical_record(%MedicalRecord{} = record, attrs \\ %{}) do
+    MedicalRecord.changeset(record, attrs)
+  end
+
+  # Full record: user, allergies and clinical history (with its doctor).
+  def record_for_patient(%Patient{} = patient) do
+    records_query = from r in MedicalRecord, order_by: [desc: r.recorded_on, desc: r.id]
+    allergies_query = from a in Allergy, order_by: a.substance
+
+    Repo.preload(
+      patient,
+      [user: [], allergies: allergies_query, medical_records: {records_query, :doctor}],
+      force: true
+    )
   end
 end
