@@ -30,7 +30,16 @@ defmodule UmgHealthcare.Routines do
     |> Repo.update()
   end
 
-  def delete_activity(%Activity{} = activity), do: Repo.delete(activity)
+  # Fails with a changeset if a prescription still uses the activity.
+  def delete_activity(%Activity{} = activity) do
+    activity
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.foreign_key_constraint(:name,
+      name: :dose_schedules_activity_id_fkey,
+      message: "is used by a prescription"
+    )
+    |> Repo.delete()
+  end
 
   def change_activity(%Activity{} = activity, attrs \\ %{}) do
     Activity.changeset(activity, attrs)
