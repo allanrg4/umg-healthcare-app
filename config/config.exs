@@ -84,6 +84,9 @@ config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 config :tzdata, :autoupdate, :disabled
 config :umg_healthcare, :timezone, "America/Guatemala"
 
+# Interface language: validation errors and generated texts come from priv/gettext/es.
+config :umg_healthcare, UmgHealthcareWeb.Gettext, default_locale: "es"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

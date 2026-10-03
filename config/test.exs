@@ -42,3 +42,6 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# Tests compare Ecto's original English messages; Spanish is checked in translations_test.exs.
+config :umg_healthcare, UmgHealthcareWeb.Gettext, default_locale: "en"

@@ -1,0 +1,21 @@
+## Spanish translations of the few interface texts that Phoenix generates
+## with gettext (connection notices and table helpers).
+msgid ""
+msgstr ""
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "close"
+msgstr "cerrar"
+
+msgid "We can't find the internet"
+msgstr "No hay conexión a internet"
+
+msgid "Something went wrong!"
+msgstr "¡Algo salió mal!"
+
+msgid "Attempting to reconnect"
+msgstr "Intentando reconectar"
