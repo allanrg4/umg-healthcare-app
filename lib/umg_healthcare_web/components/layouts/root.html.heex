@@ -43,6 +43,7 @@
         <%= if @current_scope.user.role == :patient do %>
           <li><.link href={~p"/dashboard"}>Mis tomas</.link></li>
           <li><.link href={~p"/routine"}>Mi rutina</.link></li>
+          <li><.link href={~p"/adherence"}>Mi cumplimiento</.link></li>
         <% end %>
         <li>
           {@current_scope.user.email}

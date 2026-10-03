@@ -1,0 +1,18 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <.header>
+    Mi cumplimiento
+    <:subtitle>Una toma cuenta como omitida si pasa más de una hora sin marcarla.</:subtitle>
+    <:actions>
+      <.button href={~p"/dashboard"}>Volver al panel</.button>
+    </:actions>
+  </.header>
+
+  <.adherence_summary
+    id="week"
+    title="Últimos 7 días"
+    summary={@week}
+    now={@now}
+    show_doses={false}
+  />
+  <.adherence_summary id="month" title="Últimos 30 días" summary={@month} now={@now} />
+</Layouts.app>

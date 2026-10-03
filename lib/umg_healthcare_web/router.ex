@@ -39,6 +39,7 @@ defmodule UmgHealthcareWeb.Router do
 
     get "/dashboard", DashboardController, :index
     post "/doses/:id/take", DoseController, :take
+    get "/adherence", AdherenceController, :show
     resources "/routine", ActivityController, except: [:show]
   end
 
