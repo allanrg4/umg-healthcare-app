@@ -1,0 +1,68 @@
+<Layouts.flash_group flash={@flash} />
+
+<div class="mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8">
+  <section id="hero" class="pt-10 pb-16 text-center sm:pt-16">
+    <span class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+      <.icon name="hero-heart" class="size-4" /> Hospital La Paz
+    </span>
+    <h1 class="mx-auto mt-6 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
+      Seguimiento de medicación, al ritmo de tu día
+    </h1>
+    <p class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-base-content/70">
+      Una plataforma para que los pacientes no olviden sus tomas y los médicos sepan cómo va
+      cada tratamiento. Las tomas se programan alrededor de la rutina del paciente: el desayuno,
+      la cena o la hora de dormir.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <.button variant="primary" href={~p"/users/register"} id="cta-register">
+        Crear una cuenta
+      </.button>
+      <.button href={~p"/users/log-in"} id="cta-login">Iniciar sesión</.button>
+    </div>
+  </section>
+
+  <section id="features" class="grid gap-5 sm:grid-cols-2">
+    <.feature icon="hero-bell-alert" title="Recordatorios ligados a la rutina">
+      El médico indica "30 minutos después del desayuno" y el sistema calcula la hora exacta.
+      El paciente ve cuánto falta para cada toma y qué medicamentos le tocan.
+    </.feature>
+    <.feature icon="hero-clipboard-document-list" title="Expediente clínico">
+      Historial de consultas, diagnósticos y resultados de pruebas, alergias y medicaciones
+      actuales y pasadas en una sola página.
+    </.feature>
+    <.feature icon="hero-chart-bar" title="Historial de cumplimiento">
+      Cada toma queda registrada como tomada u omitida. Paciente y médico ven el porcentaje de
+      cumplimiento de los últimos 7 y 30 días.
+    </.feature>
+    <.feature icon="hero-arrow-path" title="Alertas de renovación">
+      Los médicos reciben un aviso cuando una receta termina en tres días o menos, para
+      renovarla a tiempo.
+    </.feature>
+  </section>
+
+  <section id="how-it-works" class="mt-20">
+    <h2 class="text-center text-2xl font-bold tracking-tight">¿Cómo funciona?</h2>
+    <ol class="mt-8 grid gap-6 sm:grid-cols-3">
+      <li :for={
+        {step, title, text} <- [
+          {"1", "El paciente define su rutina",
+           "Registra sus actividades diarias con su hora: desayuno, almuerzo, cena, dormir."},
+          {"2", "El médico receta",
+           "Elige el medicamento, la dosis, la duración y a qué actividad se asocia cada toma."},
+          {"3", "Se da seguimiento",
+           "El paciente marca sus tomas y el médico revisa el cumplimiento y las renovaciones."}
+        ]
+      }>
+        <div class="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-content">
+          {step}
+        </div>
+        <h3 class="mt-4 font-semibold">{title}</h3>
+        <p class="mt-1 text-sm leading-relaxed text-base-content/70">{text}</p>
+      </li>
+    </ol>
+  </section>
+
+  <footer class="mt-20 border-t border-base-300 pt-6 text-center text-sm text-base-content/60">
+    Proyecto de Desarrollo Web · Universidad Mariano Gálvez de Guatemala
+  </footer>
+</div>

@@ -4,8 +4,12 @@ defmodule UmgHealthcareWeb.PageControllerTest do
   import UmgHealthcare.AccountsFixtures
   import UmgHealthcare.PatientsFixtures
 
-  test "GET / sends anonymous visitors to login", %{conn: conn} do
-    assert redirected_to(get(conn, ~p"/")) == ~p"/users/log-in"
+  test "GET / shows the landing page to visitors", %{conn: conn} do
+    html = conn |> get(~p"/") |> html_response(200)
+
+    assert html =~ "Seguimiento de medicación"
+    assert html =~ ~s(id="cta-register")
+    assert html =~ ~s(id="cta-login")
   end
 
   test "GET / sends patients to their dashboard", %{conn: conn} do
